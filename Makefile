@@ -58,7 +58,7 @@ release-snapshot:
 
 release:
 	curl -sfL https://install.goreleaser.com/github.com/goreleaser/goreleaser.sh | sh
-	./bin/goreleaser --rm-dist --skip-publish
+	./bin/goreleaser --rm-dist
 	cd dist && ls *.dmg | xargs shasum -a256 >> $$(ls *_checksums.txt)
 
 lint-cyclo:
