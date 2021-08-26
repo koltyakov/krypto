@@ -48,14 +48,16 @@ bundle-darwin: build-darwin
 	rm -rf 'bin/darwin/$(app).app'
 
 tag:
-	git tag -a v$(version) -m "Version $(version)"
+	git tag -fa v$(version) -m "Version $(version)"
 	git push origin --tags
 
 release-snapshot:
+	curl -sfL https://install.goreleaser.com/github.com/goreleaser/goreleaser.sh | sh
 	./bin/goreleaser --rm-dist --skip-publish --snapshot
 	cd dist && ls *.dmg | xargs shasum -a256 >> $$(ls *_checksums.txt)
 
 release:
+	curl -sfL https://install.goreleaser.com/github.com/goreleaser/goreleaser.sh | sh
 	./bin/goreleaser --rm-dist --skip-publish
 	cd dist && ls *.dmg | xargs shasum -a256 >> $$(ls *_checksums.txt)
 
