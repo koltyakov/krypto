@@ -1,0 +1,46 @@
+before:
+  hooks:
+    - make install
+
+builds:
+
+  - id: darwin
+    env:
+      - CGO_ENABLED=1
+    goos:
+      - darwin
+    goarch:
+      - amd64
+    hooks:
+      pre:
+       - cmd: make version={{.Version}} bundle-darwin
+       - cmd: mv bin/darwin/krypto_{{.Version}}_darwin_x86_64.dmg dist/
+    ldflags:
+      - -s -w -X main.version={{.Version}}
+
+archives:
+
+  - id: darwin
+    builds:
+    - darwin
+    replacements:
+      amd64: x86_64
+    files:
+      - LICENSE
+
+checksum:
+  algorithm: sha256
+
+snapshot:
+  name_template: 0.0.0-SNAPSHOT-{{.ShortCommit}}
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^.github:'
+      - '^docs:'
+      - '^test:'
+      - '^assets:'
+      - '^docs:'
+      - '^readme:'
