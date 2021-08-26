@@ -56,7 +56,7 @@ release-snapshot:
 	cd dist && ls *.dmg | xargs shasum -a256 >> $$(ls *_checksums.txt)
 
 release:
-	goreleaser --rm-dist --skip-publish
+	./bin/goreleaser --rm-dist --skip-publish
 	cd dist && ls *.dmg | xargs shasum -a256 >> $$(ls *_checksums.txt)
 
 lint-cyclo:
