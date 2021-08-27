@@ -1,4 +1,4 @@
-# `make version=0.1.0 tag`
+# `make version=0.0.2 tag`
 version := 0.0.0-SNAPSHOT
 author  := Andrew Koltyakov
 app     := Krypto
@@ -53,6 +53,11 @@ tag:
 release-snapshot:
 	curl -sfL https://install.goreleaser.com/github.com/goreleaser/goreleaser.sh | sh
 	./bin/goreleaser --rm-dist --skip-publish --snapshot
+	cd dist && ls *.dmg | xargs shasum -a256 >> $$(ls *_checksums.txt)
+
+release-local:
+	curl -sfL https://install.goreleaser.com/github.com/goreleaser/goreleaser.sh | sh
+	./bin/goreleaser --rm-dist --skip-publish
 	cd dist && ls *.dmg | xargs shasum -a256 >> $$(ls *_checksums.txt)
 
 release:
