@@ -59,6 +59,7 @@ func getCurretPrice(ctx context.Context) (*CurrentPrice, error) {
 	return price, nil
 }
 
+// FormatRate formats provided currency rate
 func (p *CurrentPrice) FormatRate(currency string) string {
 	c, ok := p.BPI[currency]
 	if !ok {
@@ -68,6 +69,7 @@ func (p *CurrentPrice) FormatRate(currency string) string {
 	return html.UnescapeString(c.Symbol) + formatNumber(int(c.Rate), ',')
 }
 
+// FormatDescription formats description (tooltip details message)
 func (p *CurrentPrice) FormatDescription() string {
 	return ("Updated at " + p.Time.Updated.Local().Format(time.RFC1123) + ":\n" +
 		"- USD: " + html.UnescapeString(p.BPI["USD"].Symbol) + formatNumber(int(p.BPI["USD"].Rate), ',') + "\n" +

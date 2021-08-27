@@ -114,11 +114,18 @@ func menuActions() {
 func run(timeout time.Duration, cnfg *settings) time.Duration {
 	price, err := getCurretPrice(appCtx)
 	if err != nil {
+		// Coindesk API sometimes fails, reducing UI error appearence cases with retries
 		errorsCount++
-		if errorsCount > 10 || currentPrice == nil {
+		// On initial load service error retry every 5 seconds but not more than 10 times
+		if currentPrice == nil && errorsCount <= 10 {
+			return 5 * time.Second
+		}
+		// Show error only after 10 retries
+		if errorsCount > 10 {
 			onError(err)
 		}
-		return 30 * time.Second
+		// On error, awaiting a bit more before quering API again
+		return 60 * time.Second
 	}
 
 	errorsCount = 0
