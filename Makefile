@@ -8,7 +8,6 @@ install:
 	go get -u ./... && go mod tidy
 	which appify || go get github.com/machinebox/appify
 	which create-dmg || npm i -g create-dmg
-	which goreleaser || curl -sfL https://install.goreleaser.com/github.com/goreleaser/goreleaser.sh | sh
 
 format:
 	gofmt -s -w .

@@ -25,7 +25,6 @@ jobs:
       run: |
         npm i -g create-dmg
         go get github.com/machinebox/appify
-        # curl -sfL https://install.goreleaser.com/github.com/goreleaser/goreleaser.sh | sh
 
     - name: Check out code into the Go module directory
       uses: actions/checkout@v2
@@ -36,4 +35,4 @@ jobs:
     - name: Bundle
       run: make release
       env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
