@@ -1,22 +1,22 @@
 before:
   hooks:
-    - make install
+  - make install
 
 builds:
 
   - id: darwin
     env:
-      - CGO_ENABLED=1
+    - CGO_ENABLED=1
     goos:
-      - darwin
+    - darwin
     goarch:
-      - amd64
+    - amd64
     hooks:
       pre:
-       - cmd: make version={{.Version}} bundle-darwin
-       - cmd: mv bin/darwin/krypto_{{.Version}}_darwin_x86_64.dmg dist/
+      - cmd: make version={{.Version}} bundle-darwin
+      - cmd: mv bin/darwin/krypto_{{.Version}}_darwin_x86_64.dmg dist/
     ldflags:
-      - -s -w -X main.version={{.Version}}
+    - -s -w -X main.version={{.Version}}
 
 archives:
 
@@ -26,7 +26,7 @@ archives:
     replacements:
       amd64: x86_64
     files:
-      - LICENSE
+    - LICENSE
 
 checksum:
   algorithm: sha256
@@ -38,9 +38,9 @@ changelog:
   sort: asc
   filters:
     exclude:
-      - '^.github:'
-      - '^docs:'
-      - '^test:'
-      - '^assets:'
-      - '^docs:'
-      - '^readme:'
+    - '^.github:'
+    - '^docs:'
+    - '^test:'
+    - '^assets:'
+    - '^docs:'
+    - '^readme:'
