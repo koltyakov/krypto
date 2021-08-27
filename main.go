@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"html"
 	"os"
 	"os/signal"
 	"strings"
@@ -170,12 +169,12 @@ func onPriceChange() {
 		return
 	}
 
-	c, ok := currentPrice.BPI[currentCurrency]
-	if !ok {
+	rate := currentPrice.FormatRate(currentCurrency)
+	if rate == "" {
 		onError(fmt.Errorf("can't resolve currency: %s", currentCurrency))
 		return
 	}
 
-	tray.SetTitle(fmt.Sprintf(" %s%s", html.UnescapeString(c.Symbol), formatNumber(int(c.Rate), ',')))
-	tray.SetTooltip(fmt.Sprintf("Updated at %s", currentPrice.Time.UpdatedISO))
+	tray.SetTitle(" " + rate)
+	tray.SetTooltip(currentPrice.FormatDescription())
 }

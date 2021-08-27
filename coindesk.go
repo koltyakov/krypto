@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
+	"html"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -12,10 +13,11 @@ import (
 
 type CurrentPrice struct {
 	Time struct {
-		UpdatedISO time.Time `json:"updatedISO"`
+		Updated time.Time `json:"updatedISO"`
 	} `json:"time"`
-	ChartName string                  `json:"chartName"`
-	BPI       map[string]CurrencyRate `json:"bpi"`
+	Name       string                  `json:"chartName"`
+	Disclaimer string                  `json:"disclaimer"`
+	BPI        map[string]CurrencyRate `json:"bpi"`
 }
 
 type CurrencyRate struct {
@@ -55,4 +57,21 @@ func getCurretPrice(ctx context.Context) (*CurrentPrice, error) {
 	}
 
 	return price, nil
+}
+
+func (p *CurrentPrice) FormatRate(currency string) string {
+	c, ok := p.BPI[currency]
+	if !ok {
+		return ""
+	}
+
+	return html.UnescapeString(c.Symbol) + formatNumber(int(c.Rate), ',')
+}
+
+func (p *CurrentPrice) FormatDescription() string {
+	return ("Updated at " + p.Time.Updated.Local().Format(time.RFC1123) + ":\n" +
+		"- USD: " + html.UnescapeString(p.BPI["USD"].Symbol) + formatNumber(int(p.BPI["USD"].Rate), ',') + "\n" +
+		"- EUR: " + html.UnescapeString(p.BPI["EUR"].Symbol) + formatNumber(int(p.BPI["EUR"].Rate), ',') + "\n" +
+		"- GBP: " + html.UnescapeString(p.BPI["GBP"].Symbol) + formatNumber(int(p.BPI["GBP"].Rate), ',') + "\n\n" +
+		"Disclaimer: " + p.Disclaimer)
 }
