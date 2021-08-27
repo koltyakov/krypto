@@ -74,7 +74,7 @@ func onReady() {
 	menu["currency:eur"] = menu["currency"].AddSubMenuItem("EUR", "Euro")
 	menu["currency:gbp"] = menu["currency"].AddSubMenuItem("GBP", "British pound sterling")
 	systray.AddSeparator()
-	menu["about"] = systray.AddMenuItem("About", "Krypto "+getAppVersion())
+	menu["about"] = systray.AddMenuItem("About", "Krypto v"+getAppVersion())
 	menu["quit"] = systray.AddMenuItem("Quit", "Quit Krypto")
 
 	changeCurrency(currentCurrency) // ToDo: Use settings
