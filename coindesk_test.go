@@ -21,7 +21,7 @@ func TestCoindesk(t *testing.T) {
 		BPI: map[string]struct {
 			Code   string  `json:"code"`
 			Symbol string  `json:"symbol"`
-			Rate   float32 `json:"rate_float"`
+			Rate   float64 `json:"rate_float"`
 		}{
 			"USD": {
 				Code:   "USD",

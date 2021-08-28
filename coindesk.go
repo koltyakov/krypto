@@ -24,7 +24,7 @@ type CoindeskRate struct {
 	BPI        map[string]struct {
 		Code   string  `json:"code"`
 		Symbol string  `json:"symbol"`
-		Rate   float32 `json:"rate_float"`
+		Rate   float64 `json:"rate_float"`
 	} `json:"bpi"`
 }
 
@@ -68,8 +68,8 @@ func (c Coindesk) GetRate(ctx context.Context) (*CoindeskRate, error) {
 }
 
 // FormatRate formats provided currency rate
-func (p *CoindeskRate) FormatRate(currency string) string {
-	c, ok := p.BPI[currency]
+func (r *CoindeskRate) FormatRate(currency string) string {
+	c, ok := r.BPI[currency]
 	if !ok {
 		return ""
 	}
@@ -78,14 +78,14 @@ func (p *CoindeskRate) FormatRate(currency string) string {
 }
 
 // FormatDesc formats description (tooltip details message)
-func (p *CoindeskRate) FormatDesc() string {
+func (r *CoindeskRate) FormatDesc() string {
 	formatLine := func(curr string) string {
-		if _, ok := p.BPI[curr]; !ok {
+		if _, ok := r.BPI[curr]; !ok {
 			return ""
 		}
-		return "- " + curr + ": " + html.UnescapeString(p.BPI[curr].Symbol) + formatNumber(int(p.BPI[curr].Rate), ',') + "\n"
+		return "- " + curr + ": " + r.FormatRate(curr) + "\n"
 	}
-	return ("Updated at " + p.Time.Updated.Local().Format(time.RFC1123) + ":\n" +
+	return ("Updated at " + r.Time.Updated.Local().Format(time.RFC1123) + ":\n" +
 		formatLine("USD") + formatLine("EUR") + formatLine("GBP") +
-		"\nDisclaimer: " + p.Disclaimer)
+		"\nDisclaimer: " + r.Disclaimer)
 }

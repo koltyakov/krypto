@@ -23,9 +23,10 @@ var (
 	menu                 = map[string]*systray.MenuItem{}
 	tray                 = &Tray{} // Tray state cache
 	appCtx, appCtxCancel = context.WithCancel(context.Background())
-	currentRate          *CoindeskRate
-	activeCurr           = "USD" // ToDo: Get from settings
-	errorsCount          = 0
+
+	currentRate *CoingeckoRate // *CoindeskRate
+	activeCurr  = "USD"        // ToDo: Get from settings
+	errorsCount = 0
 )
 
 // Init systray applications
@@ -112,7 +113,8 @@ func menuActions() {
 
 // run executes notification checks logic
 func run(timeout time.Duration, cnfg *settings) time.Duration {
-	price, err := NewCoindesk().GetRate(appCtx)
+	// price, err := NewCoindesk().GetRate(appCtx)
+	price, err := NewCoingecko().GetRate(appCtx)
 	if err != nil {
 		// Coindesk API sometimes fails, reducing UI error appearence cases with retries
 		errorsCount++
