@@ -1,7 +1,7 @@
 # Krypto
 
-> Bitcoin system tray exchange rate for macOS
+> ₿ Bitcoin menu bar for macOS
 
 ![Krypto](./assets/krypto.png)
 
-Krypto is a simple application for macOS which sits in system tray and shows current exchange rate for Bitcoin.
+Krypto is a simple application for macOS which sits in menu bar and shows current exchange rate for Bitcoin.
