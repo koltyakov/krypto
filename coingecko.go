@@ -98,5 +98,5 @@ func (r *CoingeckoRate) FormatDesc() string {
 	}
 	return ("Updated at " + time.Unix(r.Bitcoin.Updated, 0).Local().Format(time.RFC1123) + ":\n" +
 		formatLine("USD") + formatLine("EUR") + formatLine("GBP") +
-		"\nData source: CounGecko https://www.coingecko.com/en")
+		"\nData source: CoinGecko \nhttps://www.coingecko.com/en")
 }
