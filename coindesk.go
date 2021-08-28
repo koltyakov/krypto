@@ -11,22 +11,30 @@ import (
 	"time"
 )
 
-type CurrentPrice struct {
+// Coindesk API struct
+type Coindesk struct{}
+
+// CoindeskRate API response struct
+type CoindeskRate struct {
 	Time struct {
 		Updated time.Time `json:"updatedISO"`
 	} `json:"time"`
-	Name       string                  `json:"chartName"`
-	Disclaimer string                  `json:"disclaimer"`
-	BPI        map[string]CurrencyRate `json:"bpi"`
+	Name       string `json:"chartName"`
+	Disclaimer string `json:"disclaimer"`
+	BPI        map[string]struct {
+		Code   string  `json:"code"`
+		Symbol string  `json:"symbol"`
+		Rate   float32 `json:"rate_float"`
+	} `json:"bpi"`
 }
 
-type CurrencyRate struct {
-	Code   string  `json:"code"`
-	Symbol string  `json:"symbol"`
-	Rate   float32 `json:"rate_float"`
+// NewCoindesk constructor
+func NewCoindesk() Coindesk {
+	return Coindesk{}
 }
 
-func getCurretPrice(ctx context.Context) (*CurrentPrice, error) {
+// GetRate gets rate from the API
+func (c Coindesk) GetRate(ctx context.Context) (*CoindeskRate, error) {
 	req, err := http.NewRequest("GET", "https://api.coindesk.com/v1/bpi/currentprice.json", nil)
 	if err != nil {
 		return nil, err
@@ -51,7 +59,7 @@ func getCurretPrice(ctx context.Context) (*CurrentPrice, error) {
 		return nil, err
 	}
 
-	price := &CurrentPrice{}
+	price := &CoindeskRate{}
 	if err := json.Unmarshal(bodyBytes, &price); err != nil {
 		return nil, err
 	}
@@ -60,7 +68,7 @@ func getCurretPrice(ctx context.Context) (*CurrentPrice, error) {
 }
 
 // FormatRate formats provided currency rate
-func (p *CurrentPrice) FormatRate(currency string) string {
+func (p *CoindeskRate) FormatRate(currency string) string {
 	c, ok := p.BPI[currency]
 	if !ok {
 		return ""
@@ -69,11 +77,15 @@ func (p *CurrentPrice) FormatRate(currency string) string {
 	return html.UnescapeString(c.Symbol) + formatNumber(int(c.Rate), ',')
 }
 
-// FormatDescription formats description (tooltip details message)
-func (p *CurrentPrice) FormatDescription() string {
+// FormatDesc formats description (tooltip details message)
+func (p *CoindeskRate) FormatDesc() string {
+	formatLine := func(curr string) string {
+		if _, ok := p.BPI[curr]; !ok {
+			return ""
+		}
+		return "- " + curr + ": " + html.UnescapeString(p.BPI[curr].Symbol) + formatNumber(int(p.BPI[curr].Rate), ',') + "\n"
+	}
 	return ("Updated at " + p.Time.Updated.Local().Format(time.RFC1123) + ":\n" +
-		"- USD: " + html.UnescapeString(p.BPI["USD"].Symbol) + formatNumber(int(p.BPI["USD"].Rate), ',') + "\n" +
-		"- EUR: " + html.UnescapeString(p.BPI["EUR"].Symbol) + formatNumber(int(p.BPI["EUR"].Rate), ',') + "\n" +
-		"- GBP: " + html.UnescapeString(p.BPI["GBP"].Symbol) + formatNumber(int(p.BPI["GBP"].Rate), ',') + "\n\n" +
-		"Disclaimer: " + p.Disclaimer)
+		formatLine("USD") + formatLine("EUR") + formatLine("GBP") +
+		"\nDisclaimer: " + p.Disclaimer)
 }

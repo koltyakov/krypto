@@ -23,8 +23,8 @@ var (
 	menu                 = map[string]*systray.MenuItem{}
 	tray                 = &Tray{} // Tray state cache
 	appCtx, appCtxCancel = context.WithCancel(context.Background())
-	currentPrice         *CurrentPrice
-	currentCurrency      = "USD" // ToDo: Get from settings
+	currentRate          *CoindeskRate
+	activeCurr           = "USD" // ToDo: Get from settings
 	errorsCount          = 0
 )
 
@@ -77,7 +77,7 @@ func onReady() {
 	menu["about"] = systray.AddMenuItem("About", "Krypto v"+getAppVersion())
 	menu["quit"] = systray.AddMenuItem("Quit", "Quit Krypto")
 
-	changeCurrency(currentCurrency) // ToDo: Use settings
+	changeCurrency(activeCurr) // ToDo: Use settings
 
 	// Menu actions
 	go menuActions()
@@ -112,12 +112,12 @@ func menuActions() {
 
 // run executes notification checks logic
 func run(timeout time.Duration, cnfg *settings) time.Duration {
-	price, err := getCurretPrice(appCtx)
+	price, err := NewCoindesk().GetRate(appCtx)
 	if err != nil {
 		// Coindesk API sometimes fails, reducing UI error appearence cases with retries
 		errorsCount++
 		// On initial load service error retry every 5 seconds but not more than 10 times
-		if currentPrice == nil && errorsCount <= 10 {
+		if currentRate == nil && errorsCount <= 10 {
 			return 5 * time.Second
 		}
 		// Show error only after 10 retries
@@ -129,7 +129,7 @@ func run(timeout time.Duration, cnfg *settings) time.Duration {
 	}
 
 	errorsCount = 0
-	currentPrice = price
+	currentRate = price
 	onPriceChange()
 	return timeout
 }
@@ -157,7 +157,7 @@ func onOpenLinkHandler(url string) {
 // changeCurrency sets check mark a currency item
 // unchecks other selected modes
 func changeCurrency(currency string) {
-	currentCurrency = strings.ToUpper(currency)
+	activeCurr = strings.ToUpper(currency)
 	for mKey, mItem := range menu {
 		if strings.Contains(mKey, "currency:") {
 			if mKey == "currency:"+strings.ToLower(currency) {
@@ -172,16 +172,16 @@ func changeCurrency(currency string) {
 
 // onPriceChange updates price in tray
 func onPriceChange() {
-	if currentPrice == nil {
+	if currentRate == nil {
 		return
 	}
 
-	rate := currentPrice.FormatRate(currentCurrency)
+	rate := currentRate.FormatRate(activeCurr)
 	if rate == "" {
-		onError(fmt.Errorf("can't resolve currency: %s", currentCurrency))
+		onError(fmt.Errorf("can't resolve currency: %s", activeCurr))
 		return
 	}
 
 	tray.SetTitle(" " + rate)
-	tray.SetTooltip(currentPrice.FormatDescription())
+	tray.SetTooltip(currentRate.FormatDesc())
 }
