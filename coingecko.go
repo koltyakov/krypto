@@ -67,23 +67,14 @@ func (c Coingecko) GetRate(ctx context.Context) (*CoingeckoRate, error) {
 
 // FormatRate formats provided currency rate
 func (r *CoingeckoRate) FormatRate(currency string) string {
-	trend := func(num float64) string {
-		if num < 0 {
-			return "↓"
-		}
-		if num > 0 {
-			return "↑"
-		}
-		return ""
-	}
 	if currency == "USD" {
-		return fmt.Sprintf("$%s %s%.2f%%", formatNumber(r.Bitcoin.USD, ','), trend(r.Bitcoin.USD24hPerc), math.Abs(r.Bitcoin.USD24hPerc))
+		return fmt.Sprintf("$%s %s%.2f%%", formatNumber(r.Bitcoin.USD, ','), trendSymbol(r.Bitcoin.USD24hPerc), math.Abs(r.Bitcoin.USD24hPerc))
 	}
 	if currency == "EUR" {
-		return fmt.Sprintf("€%s %s%.2f%%", formatNumber(r.Bitcoin.EUR, ','), trend(r.Bitcoin.EUR24hPerc), math.Abs(r.Bitcoin.EUR24hPerc))
+		return fmt.Sprintf("€%s %s%.2f%%", formatNumber(r.Bitcoin.EUR, ','), trendSymbol(r.Bitcoin.EUR24hPerc), math.Abs(r.Bitcoin.EUR24hPerc))
 	}
 	if currency == "GBP" {
-		return fmt.Sprintf("₤%s %s%.2f%%", formatNumber(r.Bitcoin.GBP, ','), trend(r.Bitcoin.GBP24hPerc), math.Abs(r.Bitcoin.GBP24hPerc))
+		return fmt.Sprintf("₤%s %s%.2f%%", formatNumber(r.Bitcoin.GBP, ','), trendSymbol(r.Bitcoin.GBP24hPerc), math.Abs(r.Bitcoin.GBP24hPerc))
 	}
 	return ""
 }

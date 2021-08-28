@@ -34,3 +34,13 @@ func formatNumber(n int, sep rune) string {
 
 	return buff.String()
 }
+
+func trendSymbol(num float64) string {
+	if num < 0 {
+		return "↓"
+	}
+	if num > 0 {
+		return "↑"
+	}
+	return "±"
+}
